@@ -102,24 +102,75 @@
                     data: {},
                     success: function (response) {
                         let memos = response["memos"];
-                        console.log(memos);
+
                         for (let i = 0; i < memos.length; i++) {
-                            makeCard(memos[i]["memo"], memos[i]["comment"]);
+                            makeCard(memos[i]["name"], memos[i]["memo"], memos[i]["comment"], memos[i]["like"]);
                         }
                     }
                 })
             }
 
-            function makeCard(memo, comment) {
+            function makeCard(name, memo, comment, like) {
                 let tempHtml = `<div class="card">
                                     <div class="card-body">
                                         <p class="card-memo">${memo}</p>
                                         <p class="card-comment">${comment}</p>
+                                        <p class="card-like">${like}</p>
+                                         <footer class="card-footer">
+                                            <a href="#" onclick="deleteMemo(${name})" class="card-footer-item has-text-danger">
+                                                수정
+                                                <span class="icon"><i class="fas fa-ban"></i></span>
+                                            </a>
+                                            <a href="#" onclick="deleteMemo(${name})" class="card-footer-item has-text-danger">
+                                                삭제
+                                                <span class="icon"><i class="fas fa-ban"></i></span>
+                                            </a>
+                                            <a href="#" onclick="likeMemo(${name})" class="card-footer-item has-text-info">
+                                                좋아요!
+                                                <span class="icon"><i class="fas fa-thumbs-up"></i></span>
+                                            </a>
+
+                                        </footer>
                                     </div>
                                 </div>`;
                 $("#cards-box").append(tempHtml);
-
             }
+
+            function likeMemo(name) {
+                $.ajax({
+                    type: "POST",
+                    url: "/memo/like",
+                    data: {'name_give': name},
+                    success: function (response) {
+                        if (response['result'] == 'success') {
+                            // 2. '좋아요 완료!' 얼럿을 띄웁니다.
+                            alert('좋아요 완료!')
+                            // 3. 변경된 정보를 반영하기 위해 새로고침합니다.
+                            window.location.reload()
+                        }
+                    }
+                });
+            }
+
+            function deleteMemo(name) {
+                // 1. 서버에 1) POST 방식으로, 2) /api/delete 라는 url에, 3) name_give라는 이름으로 name을 전달합니다.
+                // 참고) POST 방식이므로 data: {'name_give': name} 과 같은 양식이 되어야합니다!
+                $.ajax({
+                    type: "POST",
+                    url: "/memo/delete",
+                    data: {'name_give': name},
+                    success: function (response) {
+                        if (response['result'] == 'success') {
+                            // 2. '삭제 완료! 안녕!' 얼럿을 띄웁니다.
+                            alert('삭제 완료! 안녕!')
+                            // 3. 변경된 정보를 반영하기 위해 새로고침합니다.
+                            window.location.reload()
+                        }
+                    }
+                });
+            }
+
+
         </script>
 
     </head>
@@ -127,7 +178,7 @@
     <body>
         <div class="wrap">
             <div class="jumbotron">
-                <h1 class="display-4">나홀로 링크 메모장!</h1>
+                <h1 class="display-4">나홀로 링크 메모장! ver2.0</h1>
                 <p class="lead"></p>
                 <hr class="my-4">
                 <p class="lead">
@@ -153,6 +204,16 @@
                     <div class="card-body">
                         <p class="card-memo">기사의 요약 내용이 들어갑니다. 동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산...</p>
                         <p class="card-comment">여기에 코멘트가 들어갑니다.</p>
+                        <footer class="card-footer">
+                            <a href="#" onclick="likeMemo()" class="card-footer-item has-text-info">
+                                위로!
+                                <span class="icon"><i class="fas fa-thumbs-up"></i></span>
+                            </a>
+                            <a href="#" onclick="deleteMemo()" class="card-footer-item has-text-danger">
+                                삭제
+                                <span class="icon"><i class="fas fa-ban"></i></span>
+                            </a>
+                        </footer>
                     </div>
                 </div>
             </div>
