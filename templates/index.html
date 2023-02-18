@@ -104,40 +104,51 @@
                         let memos = response["memos"];
 
                         for (let i = 0; i < memos.length; i++) {
-                            makeCard(memos[i]["name"], memos[i]["memo"], memos[i]["comment"], memos[i]["like"]);
+                            makeCard(memos[i]["name"], memos[i]["memo"], memos[i]["comment"], memos[i]["like"], memos[i]["type"]);
                         }
                     }
                 })
             }
 
             function makeCard(name, memo, comment, like, type) {
-
-
+                let tempHtml = ``
                 if (type == 0){
-
+                    tempHtml = `<div class="card">
+                                        <div class="card-body">
+                                            <p class="card-memo">${memo}</p>
+                                            <p class="card-comment">${comment}</p>
+                                            <p class="card-like">${like}</p>
+                                             <footer class="card-footer">
+                                                <a href="#" onclick="modifyMemoStart(${name})" class="card-footer-item has-text-danger">
+                                                    수정
+                                                    <span class="icon"><i class="fas fa-ban"></i></span>
+                                                </a>
+                                                <a href="#" onclick="deleteMemo(${name})" class="card-footer-item has-text-danger">
+                                                    삭제
+                                                    <span class="icon"><i class="fas fa-ban"></i></span>
+                                                </a>
+                                                <a href="#" onclick="likeMemo(${name})" class="card-footer-item has-text-info">
+                                                    좋아요!
+                                                    <span class="icon"><i class="fas fa-thumbs-up"></i></span>
+                                                </a>
+                                            </footer>
+                                        </div>
+                                    </div>`;
+                } else {
+                    tempHtml = `<!--<div id="post-box" className="form-post" style="display:none">-->
+                                        <div>
+                                            <div className="form-group">
+                                                <label htmlFor="post-memo-modify"></label>
+                                                <textarea id="post-memo-modify" className="form-control" placeholder="">${memo}</textarea>
+                                            </div>
+                                            <div className="form-group">
+                                                <label htmlFor="post-comment-modify"></label>
+                                                <textarea id="post-comment-modify" className="form-control" rows="2">${comment}</textarea>
+                                            </div>
+                                            <button type="button" className="btn btn-primary" onclick="modifyMemo(${name})">저장하기</button>
+                                        </div>
+<!--                                    </div>-->`
                 }
-                let tempHtml = `<div class="card">
-                                    <div class="card-body">
-                                        <p class="card-memo">${memo}</p>
-                                        <p class="card-comment">${comment}</p>
-                                        <p class="card-like">${like}</p>
-                                         <footer class="card-footer">
-                                            <a href="#" onclick="modifyMemo(${name})" class="card-footer-item has-text-danger">
-                                                수정
-                                                <span class="icon"><i class="fas fa-ban"></i></span>
-                                            </a>
-                                            <a href="#" onclick="deleteMemo(${name})" class="card-footer-item has-text-danger">
-                                                삭제
-                                                <span class="icon"><i class="fas fa-ban"></i></span>
-                                            </a>
-                                            <a href="#" onclick="likeMemo(${name})" class="card-footer-item has-text-info">
-                                                좋아요!
-                                                <span class="icon"><i class="fas fa-thumbs-up"></i></span>
-                                            </a>
-
-                                        </footer>
-                                    </div>
-                                </div>`;
                 $("#cards-box").append(tempHtml);
             }
 
@@ -175,19 +186,33 @@
                 });
             }
 
-            function modifyMemo(name, memo, comment) {
+            function modifyMemo(name) {
 
-                let memo_modify = $("#post-memo-modify").val();
-                let comment_modify = $("#post-comment-modify").val();
+                let memo_receive = $("#post-memo-modify").val();
+                let comment_receive = $("#post-comment-modify").val();
 
                 $.ajax({
                     type: "POST",
                     url: "/memo/modify",
-                    data: {'name_give': name, 'memo_give' : memo_modify, 'comment_give' : comment_modify},
+                    data: {'name_give': name, 'memo_give': memo_receive, 'comment_give': comment_receive},
+                    success: function (response) {
+                        if (response['result'] == 'success') {
+                            alert('수정완료!')
+                            window.location.reload()
+                        }
+                    }
+                });
+            }
+
+            function modifyMemoStart(name) {
+                $.ajax({
+                    type: "POST",
+                    url: "/memo/modifystart",
+                    data: {'name_give': name},
                     success: function (response) {
                         if (response['result'] == 'success') {
                             // 2. '좋아요 완료!' 얼럿을 띄웁니다.
-                            alert('좋아요 완료!')
+                            alert('메모수정!')
                             // 3. 변경된 정보를 반영하기 위해 새로고침합니다.
                             window.location.reload()
                         }
@@ -213,7 +238,7 @@
                 <div id="post-box" class="form-post" style="display:none">
                     <div>
                         <div class="form-group">
-                            <label for="post-memo">제목을 입력하세요</label>
+                            <label for="post-memo">메모를 입력하세요</label>
                             <input id="post-memo" class="form-control" placeholder="">
                         </div>
                         <div class="form-group">
