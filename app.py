@@ -83,7 +83,7 @@ def delete_memo():
 
 
 @app.route('/memo/modify', methods=['POST'])
-def modify_memo():
+def modified_memo():
     name_receive = request.form['name_give']
     memo_receive = request.form['memo_give']  # 클라이언트로부터 url을 받는 부분
     comment_receive = request.form['comment_give']  # 클라이언트로부터 comment를 받는 부분
@@ -91,18 +91,8 @@ def modify_memo():
     new_memo = memo_receive;
     new_comment = comment_receive;
 
-    db.memos.update_one({'name': int(name_receive)}, {'$set': {'memo': new_memo}})
-    db.memos.update_one({'name': int(name_receive)}, {'$set': {'comment': new_comment}})
-    db.memos.update_one({'name': int(name_receive)}, {'$set': {'type': 0}})
+    db.memos.update_one({'name': int(name_receive)}, {'$set': {'memo': new_memo}}, {'$set': {'comment': new_comment}}, {'$set': {'type': 1}})
 
-    # 3. 성공하면 success 메시지를 반환합니다.
-    return jsonify({'result': 'success'})
-
-
-@app.route('/memo/modifystart', methods=['POST'])
-def modifystart_memo():
-    name_receive = request.form['name_give']
-    db.memos.update_one({'name': int(name_receive)}, {'$set': {'type': 1}})
 
     # 3. 성공하면 success 메시지를 반환합니다.
     return jsonify({'result': 'success'})
