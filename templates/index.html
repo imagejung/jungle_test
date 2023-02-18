@@ -110,14 +110,19 @@
                 })
             }
 
-            function makeCard(name, memo, comment, like) {
+            function makeCard(name, memo, comment, like, type) {
+
+
+                if (type == 0){
+
+                }
                 let tempHtml = `<div class="card">
                                     <div class="card-body">
                                         <p class="card-memo">${memo}</p>
                                         <p class="card-comment">${comment}</p>
                                         <p class="card-like">${like}</p>
                                          <footer class="card-footer">
-                                            <a href="#" onclick="deleteMemo(${name})" class="card-footer-item has-text-danger">
+                                            <a href="#" onclick="modifyMemo(${name})" class="card-footer-item has-text-danger">
                                                 수정
                                                 <span class="icon"><i class="fas fa-ban"></i></span>
                                             </a>
@@ -163,6 +168,26 @@
                         if (response['result'] == 'success') {
                             // 2. '삭제 완료! 안녕!' 얼럿을 띄웁니다.
                             alert('삭제 완료! 안녕!')
+                            // 3. 변경된 정보를 반영하기 위해 새로고침합니다.
+                            window.location.reload()
+                        }
+                    }
+                });
+            }
+
+            function modifyMemo(name, memo, comment) {
+
+                let memo_modify = $("#post-memo-modify").val();
+                let comment_modify = $("#post-comment-modify").val();
+
+                $.ajax({
+                    type: "POST",
+                    url: "/memo/modify",
+                    data: {'name_give': name, 'memo_give' : memo_modify, 'comment_give' : comment_modify},
+                    success: function (response) {
+                        if (response['result'] == 'success') {
+                            // 2. '좋아요 완료!' 얼럿을 띄웁니다.
+                            alert('좋아요 완료!')
                             // 3. 변경된 정보를 반영하기 위해 새로고침합니다.
                             window.location.reload()
                         }
