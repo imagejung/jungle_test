@@ -15,6 +15,7 @@ def home():
     return render_template('index.html')
 
 
+
 @app.route('/memo', methods=['POST'])
 def post_article():
     memo_receive = request.form['memo_give']
@@ -32,11 +33,7 @@ def post_article():
     }
     db.memos.insert_one(memos)
 
-
-
     return jsonify({'result': 'success'})
-
-
 
 
 
