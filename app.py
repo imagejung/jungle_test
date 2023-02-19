@@ -32,7 +32,11 @@ def post_article():
     }
     db.memos.insert_one(memos)
 
+
+
     return jsonify({'result': 'success'})
+
+
 
 
 
